@@ -8,6 +8,8 @@ import bd
 from bd import *
 import psycopg2
 
+
+api_key_weather = '88a577383ce048b2214323259eb7598a'
 # Параметры подключения к базе данных PostgreSQL
 db_host = 'localhost'
 db_port = '5432'
@@ -116,7 +118,7 @@ def handle_event(event):
             message_text = "На какой день вам нужна афиша ?"
             keyboard = create_today_or_tomorrow_poster_keyboard()
             keyboard_states[user_id] = "today_or_tomorrow_poster_keyboard"
-        elif keyboard_states[user_id] == "today_or_tomorrow_poster_keyboard" and message_text.lower() == "афиша":
+        elif keyboard_states[user_id] == "today_or_tomorrow_poster_keyboard":
             if message_text.lower() == "завтра":
                 date = "завтра"
             else:
@@ -125,7 +127,7 @@ def handle_event(event):
             user_info = vk.users.get(user_ids=user_id, fields='city')
             if user_info and 'city' in user_info[0]:
                 city_name = user_info[0]['city']['title']
-                poster_info = get_poster(city_name, date)
+                poster_info = get_poster(city_name, )
                 message_text = poster_info
             else:
                 message_text = "Вы не указали свой город в профиле. Пожалуйста, укажите город и попробуйте снова."
