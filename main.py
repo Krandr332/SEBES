@@ -127,7 +127,7 @@ def handle_event(event):
             user_info = vk.users.get(user_ids=user_id, fields='city')
             if user_info and 'city' in user_info[0]:
                 city_name = user_info[0]['city']['title']
-                poster_info = get_poster(city_name, )
+                poster_info = get_poster(city_name, date)
                 message_text = poster_info
             else:
                 message_text = "Вы не указали свой город в профиле. Пожалуйста, укажите город и попробуйте снова."

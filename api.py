@@ -23,9 +23,20 @@ def get_weather(city, date):
 
 
 # Функция для получения мероприятий
-def get_poster(city):
+import requests
+from bs4 import BeautifulSoup
+
+def get_poster(city, date):
     try:
-        base_url = f'https://afisha.yandex.ru/{city}/cinema?schedule'
+        # Определение даты (сегодня или завтра)
+        if date.lower() == 'сегодня':
+            event_date = (datetime.now() + timedelta(days=0)).date()
+        elif date.lower() == 'завтра':
+            event_date = (datetime.now() + timedelta(days=1)).date()
+        else:
+            return "Некорректно указана дата. Используйте 'сегодня' или 'завтра'."
+
+        base_url = f'https://www.timeout.com/{city}'
 
         response = requests.get(base_url)
         response.raise_for_status()
@@ -34,13 +45,19 @@ def get_poster(city):
 
         events = []
 
-        event_blocks = soup.find_all('div', class_='events-list__item')
+        event_blocks = soup.find_all('div', class_='event-card')
 
         for event_block in event_blocks:
-            event_name = event_block.find('a', class_='event__name').text.strip()
-            event_date = event_block.find('time', class_='event__time').text.strip()
-            event_location = event_block.find('div', class_='event__place').text.strip()
-            events.append(f"Название: {event_name}\nДата: {event_date}\nМесто: {event_location}\n")
+            event_date_str = event_block.find('div', class_='event-card-date').text.strip()
+            event_date_obj = datetime.strptime(event_date_str, "%b %d, %Y").date()
+
+            if event_date_obj == event_date:
+                event_name = event_block.find('h3', class_='event-card-title').text.strip()
+                event_location = event_block.find('div', class_='event-card-venue').text.strip()
+                events.append(f"Название: {event_name}\nДата: {event_date_str}\nМесто: {event_location}\n")
+
+                if len(events) == 5:
+                    break  # Получено 5 мероприятий, выходим из цикла
 
         if events:
             return '\n\n'.join(events)
@@ -48,10 +65,12 @@ def get_poster(city):
             return "Мероприятия не найдены."
     except requests.exceptions.RequestException as e:
         print(f"RequestException: {e}")
-        return "Произошла ошибка при выполнении запроса к Яндекс.Афише."
+        return "Произошла ошибка при выполнении запроса к Time Out."
     except Exception as e:
         print(f"Error getting events: {e}")
         return "Произошла неизвестная ошибка при получении информации о мероприятиях."
+# Пример использования
+
 
 # Пример использования
 
