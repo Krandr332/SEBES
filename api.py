@@ -4,16 +4,41 @@ from bs4 import BeautifulSoup
 
 
 # Функция для получения погоды на сегодня или завтра
+def word_to_date(word):
+    if word == 'сегодня':
+        return datetime.now().date()
+    elif word == 'завтра':
+        return datetime.now().date() + timedelta(days=1)
+    else:
+        # Если введено другое слово, вы можете вернуть None или вызвать исключение
+        raise ValueError("Неподдерживаемое слово")
 def get_weather(city, date):
     try:
-        # Формируем URL для запроса погоды
-        url = f'https://wttr.in/{city}?format=%C+%t+%w'
+        api_key = "cb599fda-6a9e-4b67-b722-e5740cd41ac3"
+        # Преобразуем слово date в дату
+        print(date)
+        date_obj = word_to_date(date)
 
-        response = requests.get(url)
+        # Формируем URL для запроса погоды
+        url = f'https://api.weather.yandex.ru/v2/forecast?city={city}&extra=true&lang=ru_RU&limit=7&hours=false'
+        headers = {
+            'X-Yandex-API-Key': api_key
+        }
+
+        response = requests.get(url, headers=headers)
+        print(response.text)
         response.raise_for_status()  # Проверка на успешный статус ответа
 
-        weather_info = response.text.strip()
-        return f"Погода в городе {city} {date.capitalize()}: {weather_info}"
+        weather_data = response.json()
+
+        # Ищем информацию о погоде на заданную дату
+        for day in weather_data['forecasts']:
+            if day['date'] == date_obj.strftime('%Y-%m-%d'):
+                temperature = day['parts']['day']['temp_avg']
+                condition = day['parts']['day']['condition']
+                return f"Погода в городе {city} на {date_obj.strftime('%d.%m.%Y')}: Температура: {temperature}°C, Состояние: {condition}"
+
+        return f"Информация о погоде на {date_obj.strftime('%d.%m.%Y')} не найдена."
     except requests.exceptions.RequestException as e:
         print(f"RequestException: {e}")
         return "Произошла ошибка при выполнении запроса к сервису погоды."
@@ -21,58 +46,16 @@ def get_weather(city, date):
         print(f"Error getting weather: {e}")
         return "Произошла неизвестная ошибка при получении информации о погоде."
 
-
 # Функция для получения мероприятий
-import requests
-from bs4 import BeautifulSoup
 
 def get_poster(city, date):
-    try:
-        # Определение даты (сегодня или завтра)
-        if date.lower() == 'сегодня':
-            event_date = (datetime.now() + timedelta(days=0)).date()
-        elif date.lower() == 'завтра':
-            event_date = (datetime.now() + timedelta(days=1)).date()
-        else:
-            return "Некорректно указана дата. Используйте 'сегодня' или 'завтра'."
+    pass
 
-        base_url = f'https://www.timeout.com/{city}'
-
-        response = requests.get(base_url)
-        response.raise_for_status()
-
-        soup = BeautifulSoup(response.text, 'html.parser')
-
-        events = []
-
-        event_blocks = soup.find_all('div', class_='event-card')
-
-        for event_block in event_blocks:
-            event_date_str = event_block.find('div', class_='event-card-date').text.strip()
-            event_date_obj = datetime.strptime(event_date_str, "%b %d, %Y").date()
-
-            if event_date_obj == event_date:
-                event_name = event_block.find('h3', class_='event-card-title').text.strip()
-                event_location = event_block.find('div', class_='event-card-venue').text.strip()
-                events.append(f"Название: {event_name}\nДата: {event_date_str}\nМесто: {event_location}\n")
-
-                if len(events) == 5:
-                    break  # Получено 5 мероприятий, выходим из цикла
-
-        if events:
-            return '\n\n'.join(events)
-        else:
-            return "Мероприятия не найдены."
-    except requests.exceptions.RequestException as e:
-        print(f"RequestException: {e}")
-        return "Произошла ошибка при выполнении запроса к Time Out."
-    except Exception as e:
-        print(f"Error getting events: {e}")
-        return "Произошла неизвестная ошибка при получении информации о мероприятиях."
-# Пример использования
 
 
 # Пример использования
+def get_traffic(city):
+   pass
 
 
 # Функция для перевода текста
