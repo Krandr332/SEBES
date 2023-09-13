@@ -26,7 +26,6 @@ conn = psycopg2.connect(
     port=db_port
 )
 
-# Инициализация VK API
 vk_session = vk_api.VkApi(token='dddce539376035fd9bf5eb91e969ef35c61da8fa84a920c3f9260974db4e1f553b29d827a234d1a03bf46')  # Замените на ваш токен VK API
 vk = vk_session.get_api()
 keyboard_states = {}
@@ -153,7 +152,6 @@ def handle_event(event):
         send_message(user_id, message_text, keyboard)
 
 
-# Создание экземпляра Long Poll
 longpoll = VkLongPoll(vk_session)
 
 # Основной цикл обработки событий
