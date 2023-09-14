@@ -1,15 +1,14 @@
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 import random
-
-from api import *
-from keyboard import *
-import bd
-from bd import *
+import json
 import psycopg2
 
+import bd
+from api import *
+from keyboard import *
+from bd import *
 
-api_key_weather = '88a577383ce048b2214323259eb7598a'
 # Параметры подключения к базе данных PostgreSQL
 db_host = 'localhost'
 db_port = '5432'
@@ -26,7 +25,9 @@ conn = psycopg2.connect(
     port=db_port
 )
 
-vk_session = vk_api.VkApi(token='dddce539376035fd9bf5eb91e969ef35c61da8fa84a920c3f9260974db4e1f553b29d827a234d1a03bf46')  # Замените на ваш токен VK API
+api_key_weather = '88a577383ce048b2214323259eb7598a'
+
+vk_session = vk_api.VkApi(token='dddce539376035fd9bf5eb91e969ef35c61da8fa84a920c3f9260974db4e1f553b29d827a234d1a03bf46')
 vk = vk_session.get_api()
 keyboard_states = {}
 
@@ -138,13 +139,23 @@ def handle_event(event):
 
 
         elif keyboard_states[user_id] == "other" and message_text.lower() == "пробка":
-            message_text = get_traffic(check_user_city(conn,user_id))
+            message_text = get_traffic(check_user_city(conn, user_id))
             keyboard = create_other_keyboard()
             keyboard_states[user_id] = "other"
         elif keyboard_states[user_id] == "other" and message_text.lower() == "валюта":
-            message_text = "валюта - хз"
+            message_text = parse_cbr_currency_rates()
             keyboard = create_other_keyboard()
             keyboard_states[user_id] = "other"
+        elif keyboard_states[user_id] == "other" and message_text.lower() == "назад":
+            message_text = "Вы вернулись назад."
+            keyboard_states[user_id] = "start"
+            keyboard = create_start_keyboard()
+        elif keyboard_states[user_id] == "waiting_for_city_correction" and message_text.lower() == "назад":
+            message_text = "Вы вернулись назад."
+            keyboard_states[user_id] = "other"
+            keyboard = create_start_keyboard()
+
+
         else:
             keyboard = create_other_keyboard()
             keyboard_states[user_id] = "other"

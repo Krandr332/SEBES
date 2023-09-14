@@ -1,6 +1,5 @@
 import json
 
-
 def create_start_keyboard():
     keyboard = {
         "one_time": True,
@@ -45,7 +44,6 @@ def create_start_city_correction_keyboard():
     }
     return json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
 
-# Функция для создания клавиатуры с другими кнопками
 def create_other_keyboard():
     keyboard = {
         "one_time": False,
@@ -58,9 +56,7 @@ def create_other_keyboard():
                         "label": "Погода"
                     },
                     "color": "default"
-                }
-            ],
-            [
+                },
                 {
                     "action": {
                         "type": "text",
@@ -74,8 +70,16 @@ def create_other_keyboard():
                 {
                     "action": {
                         "type": "text",
-                        "payload": "{\"button\": \"2\"}",
+                        "payload": "{\"button\": \"3\"}",
                         "label": "Афиша"
+                    },
+                    "color": "default"
+                },
+                {
+                    "action": {
+                        "type": "text",
+                        "payload": "{\"button\": \"4\"}",
+                        "label": "Валюта"
                     },
                     "color": "default"
                 }
@@ -84,8 +88,8 @@ def create_other_keyboard():
                 {
                     "action": {
                         "type": "text",
-                        "payload": "{\"button\": \"2\"}",
-                        "label": "Валюта"
+                        "payload": "{\"button\": \"back\"}",
+                        "label": "Назад"
                     },
                     "color": "positive"
                 }
@@ -93,6 +97,7 @@ def create_other_keyboard():
         ]
     }
     return json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
+
 def create_today_or_tomorrow_weather_keyboard():
     keyboard = {
         "one_time": False,
@@ -116,12 +121,23 @@ def create_today_or_tomorrow_weather_keyboard():
                     },
                     "color": "default"
                 }
+            ],
+            [
+                {
+                    "action": {
+                        "type": "text",
+                        "payload": "{\"button\": \"back\"}",
+                        "label": "Назад"
+                    },
+                    "color": "positive"
+                }
             ]
+
 
         ]
     }
-
     return json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
+
 def create_today_or_tomorrow_poster_keyboard():
     keyboard = {
         "one_time": False,
@@ -145,9 +161,19 @@ def create_today_or_tomorrow_poster_keyboard():
                     },
                     "color": "default"
                 }
+            ],
+            [
+                {
+                    "action": {
+                        "type": "text",
+                        "payload": "{\"button\": \"back\"}",
+                        "label": "Назад"
+                    },
+                    "color": "positive"
+                }
             ]
+
 
         ]
     }
-
     return json.dumps(keyboard, ensure_ascii=False).encode('utf-8')

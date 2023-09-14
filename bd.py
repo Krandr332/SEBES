@@ -1,5 +1,4 @@
 
-
 # Функция для проверки наличия пользователя в базе данных
 def check_user_existence(conn, user_id):
     try:
