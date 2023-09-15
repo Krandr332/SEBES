@@ -113,7 +113,7 @@ def handle_weather_request(user_id, message_text):
 
 def handle_weather_choice(user_id, message_text):
     if message_text.lower() == "назад":
-        keyboard_states[user_id] = "other"
+        keyboard_states[user_id] = "other"  # Устанавливаем состояние "other" для возврата к основной клавиатуре
         handle_back(user_id)
         return  # Завершаем выполнение функции
 
@@ -131,8 +131,9 @@ def handle_weather_choice(user_id, message_text):
         message_text = "Вы не указали свой город в профиле. Пожалуйста, укажите город и попробуйте снова."
 
     keyboard = create_other_keyboard()
-    keyboard_states[user_id] = "other"
+    keyboard_states[user_id] = "other"  # Устанавливаем состояние "other" после обработки выбора погоды
     send_message(user_id, message_text, keyboard)
+
 
 
 def handle_poster_request(user_id, message_text):
@@ -178,7 +179,7 @@ def handle_currency_request(user_id):
 def handle_back(user_id):
     message_text = "Вы вернулись назад."
     keyboard_states[user_id] = "other"
-    keyboard = create_start_keyboard()
+    keyboard = create_other_keyboard()
     send_message(user_id, message_text, keyboard)
 
 
@@ -195,14 +196,17 @@ def handle_event(event):
         message_text = event.text
         keyboard = None
 
-        if user_id not in keyboard_states or keyboard_states[user_id] == "start" or keyboard_states[user_id] =="Вы вернулись назад.":
+        if user_id not in keyboard_states or keyboard_states[user_id] == "start":
             handle_start(user_id, message_text)
         elif keyboard_states[user_id] == "waiting_for_city":
             handle_waiting_for_city(user_id, message_text)
         elif keyboard_states[user_id] == "waiting_for_confirmation":
             handle_waiting_for_confirmation(user_id, message_text)
         elif keyboard_states[user_id] == "today_or_tomorrow_weather_keyboard":
-            handle_weather_choice(user_id, message_text)
+            if message_text.lower() == "назад":
+                handle_back(user_id)
+            else:
+                handle_weather_choice(user_id, message_text)
         elif keyboard_states[user_id] == "today_or_tomorrow_poster_keyboard":
             handle_poster_choice(user_id, message_text)
         elif keyboard_states[user_id] == "other" and message_text.lower() == "погода":
