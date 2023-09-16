@@ -88,6 +88,7 @@ def handle_waiting_for_city(user_id, message_text):
 
 
 def handle_waiting_for_confirmation(user_id, message_text):
+    keyboard = None  # Устанавливаем значение по умолчанию
     if message_text.lower() == "начать":
         keyboard_states[user_id] = "other"
         message_text = "Регистрация успешно завершена. Теперь вы можете воспользоваться другими функциями."
@@ -103,6 +104,14 @@ def handle_waiting_for_confirmation(user_id, message_text):
 
     send_message(user_id, message_text, keyboard)
 
+def set_city(user_id,message_text):
+    update_user_city(conn, user_id, message_text)
+    keyboard = create_other_keyboard()
+    keyboard_states[user_id] = "other"
+    message_text = "Город успешно изменен"
+    send_message(user_id, message_text, keyboard)
+
+    return
 
 def handle_weather_request(user_id, message_text):
     message_text = "На какой день вам интересна погода ?"
@@ -207,6 +216,8 @@ def handle_event(event):
                 handle_back(user_id)
             else:
                 handle_weather_choice(user_id, message_text)
+        elif keyboard_states[user_id]=="waiting_for_city_correction":
+            set_city(user_id,message_text)
         elif keyboard_states[user_id] == "today_or_tomorrow_poster_keyboard":
             handle_poster_choice(user_id, message_text)
         elif keyboard_states[user_id] == "other" and message_text.lower() == "погода":
